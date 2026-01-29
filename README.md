@@ -1,6 +1,6 @@
 # Little Lemon API
 
-**Production-ready Django REST Framework restaurant management system with role-based authentication, full CRUD operations, and enterprise-grade features.**
+A secure, role-based Django REST Framework project implementing full CRUD operations for a restaurant management system.
 
 ## ✨ Features
 
