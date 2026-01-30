@@ -115,7 +115,7 @@ class OrderSerializer(serializers.ModelSerializer):
         many=True, read_only=True, source="orderitem_set")
 
     total = serializers.DecimalField(
-        max_digitis=6, decimal_places=2, read_only=True)
+        max_digits=6, decimal_places=2, read_only=True)
     status = serializers.BooleanField(read_only=True)
     deliver_crew = UserSerializer(read_only=True)
 

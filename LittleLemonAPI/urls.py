@@ -1,5 +1,7 @@
 from django.urls import path
+from . import views
 
 urlpatterns = [
-    # You’ll add endpoints here next (menu-items, cart, orders, groups)
+    path("menu-items", views.MenuItemsView.as_view()),
+    path("menu-items/<int:pk>", views.SingleMenuItemView.as_view()),
 ]
