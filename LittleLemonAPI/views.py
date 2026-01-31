@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User, Group
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -171,4 +172,76 @@ class SingleOrderView(APIView):
             return Response({"detail": "Forbidden."}, status=status.HTTP_403_FORBIDDEN)
 
         order.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class ManagersView(APIView):
+    permission_classes = [IsAuthenticated, IsManager]
+
+    def get(self, request):
+        group = Group.objects.get(name="Manager")
+        users = group.user_set.all()
+        data = [{"id": u.id, "username": u.username} for u in users]
+        return Response(data)
+
+    def post(self, request):
+        user_id = request.data.get("user_id")
+
+        try:
+            user = User.objects.get(id=user_id)
+            group = Group.objects.get(name="Manager")
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        group.user_set.add(user)
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class SingleManagerView(APIView):
+    permission_classes = [IsAuthenticated, IsManager]
+
+    def delete(self, request, pk):
+        try:
+            user = User.objects.get(id=pk)
+            group = Group.objects.get(name="Manager")
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        group.user_set.remove(user)
+        return Response(status=status.HTTP_200_OK)
+
+
+class DeliveryCrewView(APIView):
+    permission_classes = [IsAuthenticated, IsManager]
+
+    def get(self, request):
+        group = Group.objects.get(name="Delivery crew")
+        users = group.user_set.all()
+        data = [{"id": u.id, "username": u.username} for u in users]
+        return Response(data)
+
+    def post(self, request):
+        user_id = request.data.get("user_id")
+
+        try:
+            user = User.objects.get(id=user_id)
+            group = Group.objects.get(name="Delivery crew")
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        group.user_set.add(user)
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class SingleDeliveryCrewView(APIView):
+    permission_classes = [IsAuthenticated, IsManager]
+
+    def delete(self, request, pk):
+        try:
+            user = User.objects.get(id=pk)
+            group = Group.objects.get(name="Delivery crew")
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        group.user_set.remove(user)
         return Response(status=status.HTTP_200_OK)
