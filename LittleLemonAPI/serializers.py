@@ -117,7 +117,7 @@ class OrderSerializer(serializers.ModelSerializer):
     total = serializers.DecimalField(
         max_digits=6, decimal_places=2, read_only=True)
     status = serializers.BooleanField(read_only=True)
-    deliver_crew = UserSerializer(read_only=True)
+    delivery_crew = UserSerializer(read_only=True)
 
     class Meta:
         model = Order
@@ -161,3 +161,24 @@ class OrderSerializer(serializers.ModelSerializer):
 
         cart_items.delete()
         return order
+
+
+class OrderManagerUpdateSerializer(serializers.ModelSerializer):
+    # Manager can assign any user as delivery crew (ideally restrict to Delivery crew group later)
+    delivery_crew = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), required=False, allow_null=True
+    )
+    status = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = Order
+        fields = ["delivery_crew", "status"]
+
+
+class OrderDeliveryUpdateSerializer(serializers.ModelSerializer):
+    # Delivery crew can ONLY update status
+    status = serializers.BooleanField(required=True)
+
+    class Meta:
+        model = Order
+        fields = ["status"]
