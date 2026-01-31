@@ -5,13 +5,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from .models import MenuItem, Cart, Order
+from .models import MenuItem, Cart, Order, Category
 from .serializers import (
     MenuItemSerializer,
     CartSerializer,
     OrderSerializer,
     OrderManagerUpdateSerializer,
     OrderDeliveryUpdateSerializer,
+    CategorySerializer
 )
 from .permissions import IsManager, IsDeliveryCrew, IsCustomer
 
@@ -245,3 +246,27 @@ class SingleDeliveryCrewView(APIView):
 
         group.user_set.remove(user)
         return Response(status=status.HTTP_200_OK)
+
+
+class CategoriesView(generics.ListCreateAPIView):
+    queryset = Category.objects.all().order_by("id")
+    serializer_class = CategorySerializer
+
+    def get_permissions(self):
+        # Any authenticated user can browse categories
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+        # Only manager can create
+        return [IsAuthenticated(), IsManager()]
+
+
+class SingleCategoryView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+    def get_permissions(self):
+        # Any authenticated user can view one category
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+        # Only manager can edit/delete
+        return [IsAuthenticated(), IsManager()]

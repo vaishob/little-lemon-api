@@ -19,4 +19,8 @@ urlpatterns = [
     path("groups/delivery-crew/users", views.DeliveryCrewView.as_view()),
     path("groups/delivery-crew/users/<int:pk>",
          views.SingleDeliveryCrewView.as_view()),
+
+    # Categories
+    path("categories", views.CategoriesView.as_view()),
+    path("categories/<int:pk>", views.SingleCategoryView.as_view()),
 ]
