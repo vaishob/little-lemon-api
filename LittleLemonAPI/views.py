@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User, Group
 from rest_framework import generics, status, viewsets
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -21,9 +22,28 @@ from .permissions import IsManager, IsDeliveryCrew, IsCustomer
 
 
 class MenuItemsView(generics.ListCreateAPIView):
-    queryset = MenuItem.objects.select_related("category").all()
     serializer_class = MenuItemSerializer
     permission_classes = [IsAuthenticated]
+
+    # Enable sorting
+    filter_backends = [OrderingFilter]
+    ordering_fields = ["price"]       # allow sorting by price only
+    ordering = ["id"]                 # default ordering if none provided
+
+    def get_queryset(self):
+        qs = MenuItem.objects.select_related("category").all()
+
+        # Filter by category id: /api/menu-items?category_id=1
+        category_id = self.request.query_params.get("category_id")
+        if category_id:
+            qs = qs.filter(category_id=category_id)
+
+        # Filter by category slug: /api/menu-items?category=pizza
+        category_slug = self.request.query_params.get("category")
+        if category_slug:
+            qs = qs.filter(category__slug=category_slug)
+
+        return qs
 
     def get_permissions(self):
         # GET allowed for any authenticated user
