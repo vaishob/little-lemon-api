@@ -23,4 +23,7 @@ urlpatterns = [
     # Categories
     path("categories", views.CategoriesView.as_view()),
     path("categories/<int:pk>", views.SingleCategoryView.as_view()),
+
+    # Users
+    path("users", views.UsersView.as_view()),
 ]

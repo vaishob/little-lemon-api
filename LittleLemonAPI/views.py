@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User, Group
-from rest_framework import generics, status
+from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +12,8 @@ from .serializers import (
     OrderSerializer,
     OrderManagerUpdateSerializer,
     OrderDeliveryUpdateSerializer,
-    CategorySerializer
+    CategorySerializer,
+    UserSerializer
 )
 from .permissions import IsManager, IsDeliveryCrew, IsCustomer
 
@@ -270,3 +271,9 @@ class SingleCategoryView(generics.RetrieveUpdateDestroyAPIView):
             return [IsAuthenticated()]
         # Only manager can edit/delete
         return [IsAuthenticated(), IsManager()]
+
+
+class UsersView(generics.ListAPIView):
+    queryset = User.objects.all().order_by("id")
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsManager]
