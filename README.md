@@ -187,5 +187,4 @@ class IsManager(permissions.BasePermission):
     }
   ]
 }
-
 ```
